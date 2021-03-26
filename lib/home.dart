@@ -13,9 +13,16 @@ Future<List<Person>> fetchPeople(http.Client client) async {
   });
   final response = await client.get(uri);
   final completer = Completer<List<Person>>();
-  completer.complete(parsePeople(response.body));
 
-  return Future.value(completer.future);
+  try {
+    final response = await client.get(uri);
+
+    completer.complete(parsePeople(response.body));
+    return completer.future;
+  } catch (e) {
+    completer.completeError("Something happened.");
+    return completer.future;
+  }
 }
 
 List<Person>? parsePeople(String responseBody) {
