@@ -11,7 +11,6 @@ Future<List<Person>> fetchPeople(http.Client client) async {
   final uri = Uri.https("swapi.dev", "/api/people/", {
     "format": {"json"}
   });
-  final response = await client.get(uri);
   final completer = Completer<List<Person>>();
 
   try {
@@ -51,7 +50,27 @@ class _MyHomePageState extends State<MyHomePage> {
       body: FutureBuilder<List<Person>>(
         future: fetchPeople(http.Client()),
         builder: (context, snapshot) {
-          if (snapshot.hasError) return Text(snapshot.error.toString());
+          if (snapshot.hasError) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(snapshot.error.toString()),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {});
+                      fetchPeople(http.Client());
+                    },
+                    child: Text("Try again"),
+                  )
+                ],
+              ),
+            );
+          }
 
           return snapshot.hasData
               ? PeopleList(people: snapshot.data)
