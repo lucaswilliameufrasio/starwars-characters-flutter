@@ -8,8 +8,10 @@ import 'package:starwarsflutter/models/Person.dart';
 import 'package:starwarsflutter/person_detail.dart';
 
 Future<List<Person>> fetchPeople(http.Client client) async {
-  final response =
-      await client.get('https://swapi.dev/api/people/?format=json');
+  final uri = Uri.https("swapi.dev", "/api/people/", {
+    "format": {"json"}
+  });
+  final response = await client.get(uri);
 
   // Use the compute function to run parsePeople in a separate isolate.
   return compute(parsePeople, response.body);
@@ -73,11 +75,13 @@ class PeopleList extends StatelessWidget {
           subtitle: Text(birthyear),
           onTap: () {
             Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => PersonDetail(
-                          person: person,
-                        )));
+              context,
+              MaterialPageRoute(
+                builder: (context) => PersonDetail(
+                  person: person,
+                ),
+              ),
+            );
           },
         );
       },

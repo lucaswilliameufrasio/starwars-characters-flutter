@@ -19,7 +19,10 @@ class PersonDetail extends StatefulWidget {
 }
 
 Future<List<Films>> fetchFilms(http.Client client, PersonDetail widget) async {
-  final response = await client.get('https://swapi.dev/api/films/?format=json');
+  final uri = Uri.https("swapi.dev", "/api/films/", {
+    "format": {"json"}
+  });
+  final response = await client.get(uri);
 
   Map<String, dynamic> args = Map();
   args["body"] = response.body;
@@ -69,13 +72,13 @@ class _PersonDetailState extends State<PersonDetail> {
         padding: EdgeInsets.all(20),
         child: ListView(
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               child: Text('Send ${widget.person.name} via email'),
               onPressed: () {
                 _launchURL(widget);
               },
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text("Share Star Wars Api"),
               onPressed: () {
                 Share.share('https://swapi.dev/');
