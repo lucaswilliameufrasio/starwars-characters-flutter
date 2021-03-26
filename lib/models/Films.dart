@@ -1,6 +1,6 @@
 class Films {
-  final String title;
-  final String releaseDate;
+  final String? title;
+  final String? releaseDate;
 
   // "title": "The Phantom Menace",
   // "episode_id": 1,
@@ -16,8 +16,8 @@ class Films {
 
   factory Films.fromJson(Map<String, dynamic> json) {
     return Films(
-      title: json['title'] as String,
-      releaseDate: json['release_date'] as String,
+      title: json['title'] as String?,
+      releaseDate: json['release_date'] as String?,
     );
   }
 }

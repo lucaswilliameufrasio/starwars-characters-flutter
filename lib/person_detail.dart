@@ -10,9 +10,9 @@ import 'package:starwarsflutter/models/Person.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PersonDetail extends StatefulWidget {
-  PersonDetail({Key key, this.person}) : super(key: key);
+  PersonDetail({Key? key, this.person}) : super(key: key);
 
-  final Person person;
+  final Person? person;
 
   @override
   _PersonDetailState createState() => _PersonDetailState();
@@ -23,7 +23,7 @@ Future<List<Films>> fetchFilms(http.Client client, PersonDetail widget) async {
     "format": {"json"}
   });
   final response = await client.get(uri);
-
+  
   Map<String, dynamic> args = Map();
   args["body"] = response.body;
   args["widget"] = widget;
@@ -40,12 +40,13 @@ List<Films> parseFilms(Map args) {
   final parsed = jsonDecode(responseBody);
   var results = parsed['results'];
 
-  List<dynamic> films = widget.person.films;
-  List<dynamic> personFilms = List<dynamic>();
+  List<dynamic>? films = widget.person!.films;
+  // List<dynamic> personFilms = []..length = 500;
+  var personFilms = List<dynamic>.empty(growable: true);
 
   for (var film in results) {
     var url = film['url'];
-    if (films.contains(url)) personFilms.add(film);
+    if (films!.contains(url)) personFilms.add(film);
   }
 
   return personFilms.map<Films>((json) => Films.fromJson(json)).toList();
@@ -54,7 +55,7 @@ List<Films> parseFilms(Map args) {
 class _PersonDetailState extends State<PersonDetail> {
   _launchURL(PersonDetail widget) async {
     var url =
-        'mailto:?subject=${widget.person.name}%20info&body=So%20now%20i%20know%20where%20you%20are,%20Jedi. \n Im%20coming.';
+        'mailto:?subject=${widget.person!.name}%20info&body=So%20now%20i%20know%20where%20you%20are,%20Jedi. \n Im%20coming.';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -66,14 +67,14 @@ class _PersonDetailState extends State<PersonDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.person.name),
+        title: Text(widget.person!.name!),
       ),
       body: Padding(
         padding: EdgeInsets.all(20),
         child: ListView(
           children: <Widget>[
             ElevatedButton(
-              child: Text('Send ${widget.person.name} via email'),
+              child: Text('Send ${widget.person!.name} via email'),
               onPressed: () {
                 _launchURL(widget);
               },
@@ -84,14 +85,14 @@ class _PersonDetailState extends State<PersonDetail> {
                 Share.share('https://swapi.dev/');
               },
             ),
-            Text("Name: ${widget.person.name}"),
-            Text("Birth Year: ${widget.person.birthYear}"),
-            Text("Height: ${widget.person.height}"),
-            Text("Mass: ${widget.person.mass}"),
-            Text("Hair Color: ${widget.person.hairColor}"),
-            Text("Skin Color: ${widget.person.skinColor}"),
-            Text("Eye Color: ${widget.person.eyeColor}"),
-            Text("Gender: ${widget.person.gender}"),
+            Text("Name: ${widget.person!.name}"),
+            Text("Birth Year: ${widget.person!.birthYear}"),
+            Text("Height: ${widget.person!.height}"),
+            Text("Mass: ${widget.person!.mass}"),
+            Text("Hair Color: ${widget.person!.hairColor}"),
+            Text("Skin Color: ${widget.person!.skinColor}"),
+            Text("Eye Color: ${widget.person!.eyeColor}"),
+            Text("Gender: ${widget.person!.gender}"),
             Text("\nFilms:"),
             FutureBuilder<List<Films>>(
               future: fetchFilms(http.Client(), widget),
@@ -111,19 +112,19 @@ class _PersonDetailState extends State<PersonDetail> {
 }
 
 class FilmsList extends StatelessWidget {
-  final List<Films> films;
+  final List<Films>? films;
 
-  FilmsList({Key key, this.films}) : super(key: key);
+  FilmsList({Key? key, this.films}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.90,
       child: ListView.builder(
-          itemCount: films.length,
+          itemCount: films!.length,
           itemBuilder: (context, index) {
-            var title = films[index].title;
-            var releaseDate = films[index].releaseDate;
+            var title = films![index].title!;
+            var releaseDate = films![index].releaseDate!;
             return ListTile(
               title: Text(title),
               subtitle: Text(releaseDate),

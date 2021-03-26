@@ -12,13 +12,13 @@ Future<List<Person>> fetchPeople(http.Client client) async {
     "format": {"json"}
   });
   final response = await client.get(uri);
+  final completer = Completer<List<Person>>();
+  completer.complete(parsePeople(response.body));
 
-  // Use the compute function to run parsePeople in a separate isolate.
-  return compute(parsePeople, response.body);
+  return Future.value(completer.future);
 }
 
-// A function that converts a response body into a List<Photo>.
-List<Person> parsePeople(String responseBody) {
+List<Person>? parsePeople(String responseBody) {
   final parsed = jsonDecode(responseBody);
   var results = parsed['results'];
 
@@ -26,9 +26,9 @@ List<Person> parsePeople(String responseBody) {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, this.title}) : super(key: key);
 
-  final String title;
+  final String? title;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -39,7 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text(widget.title!),
       ),
       body: FutureBuilder<List<Person>>(
         future: fetchPeople(http.Client()),
@@ -56,19 +56,19 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class PeopleList extends StatelessWidget {
-  final List<Person> people;
+  final List<Person>? people;
 
-  PeopleList({Key key, this.people}) : super(key: key);
+  PeopleList({Key? key, this.people}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: people.length,
+      itemCount: people!.length,
       itemBuilder: (context, index) {
         // return Text(results[index]['name']);
-        var person = people[index];
-        var name = person.name;
-        var birthyear = person.birthYear;
+        var person = people![index];
+        var name = person.name!;
+        var birthyear = person.birthYear!;
 
         return ListTile(
           title: Text(name),
